@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diffie-Hellman Key Exchange</title>
+<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>Diffie-Hellman Key Exchange</h2>
+<p>Enter prime number (p): <input type="number" id="prime" class="inputBox" onchange="checkPrime()">
+<button onclick="verifyPrime()">Verify Prime</button></p>
+<p>Enter generator (g): <input type="number" id="generator" class="inputBox" onchange="checkGenerator()">
+<button onclick="verifyGenerator()">Verify Generator</button></p>
+<p>Enter Alice's private key: <input type="number" id="aliceSecret" class="inputBox"></p>
+<button onclick="generateAlicePublicKey()">Generate Alice's Public Key</button><br><br>
+<p>Enter Bob's private key: <input type="number" id="bobSecret" class="inputBox"></p>
+<button onclick="generateBobPublicKey()">Generate Bob's Public Key</button><br><br>
+<p>Shared Secret: <input type="text" id="sharedSecret" class="inputBox" readonly></p>
+<script>
+function modPow(base, exponent, modulus) {
+  return BigInt(base) ** BigInt(exponent) % BigInt(modulus);
+}
+
+function isPrime(num) {
+  if (num <= 1) return false;
+  if (num <= 3) return true;
+  
+  if (num % 2 === 0 || num % 3 === 0) return false;
+  
+  let i = 5;
+  while (i * i <= num) {
+    if (num % i === 0 || num % (i + 2) === 0) return false;
+    i += 6;
+  }
+  
+  return true;
+}
+
+function checkPrime() {
+  const p = document.getElementById('prime').value;
+  if (!isPrime(p)) {
+    alert("p should be a prime number");
+    document.getElementById('prime').value = "";
+  }
+}
+
+function verifyPrime() {
+  const p = document.getElementById('prime').value;
+  if (isPrime(p)) {
+    alert(p + " is a prime number");
+  } else {
+    alert(p + " is not a prime number");
+  }
+}
+
+function gcd(a, b) {
+  if (!b) return a;
+  return gcd(b, a % b);
+}
+
+function checkGenerator() {
+  const p = document.getElementById('prime').value;
+  const g = document.getElementById('generator').value;
+  if (gcd(g, p - 1) !== 1) {
+    alert("g should be coprime with (p-1)");
+    document.getElementById('generator').value = "";
+  }
+}
+
+function verifyGenerator() {
+  const p = document.getElementById('prime').value;
+  const g = document.getElementById('generator').value;
+  if (gcd(g, p - 1) === 1) {
+    alert(g + " is coprime with (p-1)");
+  } else {
+    alert(g + " is not coprime with (p-1)");
+  }
+}
+
+function generateAlicePublicKey() {
+  const p = document.getElementById('prime').value;
+  const g = document.getElementById('generator').value;
+  const aliceSecret = document.getElementById('aliceSecret').value;
+  
+  const alicePublicKey = modPow(g, aliceSecret, p);
+  
+  localStorage.setItem('A', alicePublicKey);
+}
+
+function generateBobPublicKey() {
+  const p = document.getElementById('prime').value;
+  const g = document.getElementById('generator').value;
+  const bobSecret = document.getElementById('bobSecret').value;
+  
+  const bobPublicKey = modPow(g, bobSecret, p);
+  
+  const alicePublicKey = localStorage.getItem('A');
+  const sharedSecret = modPow(alicePublicKey, bobSecret, p);
+  
+  document.getElementById('sharedSecret').value = sharedSecret;
+}
+</script>
+</body>
+</html>
