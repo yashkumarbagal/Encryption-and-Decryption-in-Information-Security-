@@ -50,6 +50,11 @@ public class RSA {
 
         System.out.println("Original Message is: " + message);
         int[] encrypted = new int[message.length()];
+        System.out.println("n (modulus): " + n);
+        System.out.println("m (Euler's totient function): " + m);
+        System.out.println("e (public exponent): " + e);
+        System.out.println("d (private exponent): " + d);
+        System.out.print("Encrypted Message is: ");
         for (int i = 0; i < message.length(); i++) {
             int charValue = (int) message.charAt(i);
             encrypted[i] = encrypt(charValue, e, n);
@@ -67,12 +72,3 @@ public class RSA {
         scanner.close();
     }
 }
-
-/*
- * Enter the message to be encrypted: Hello
- * Enter the first prime number (p): 17
- * Enter the second prime number (q): 11
- * Original Message is: Hello
- * Encrypted Message is: 88 38 68 68 79
- * Decrypted Message is: Hello
- */
